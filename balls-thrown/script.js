@@ -1,5 +1,7 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
+const pointers = new Map(); // map of pointers (each holding a ball)
+const balls = new Set(); // set of balls drawn and animated
 const ballRadius = 20;
 
 // adapt canvas to window size
@@ -19,9 +21,6 @@ requestAnimationFrame(onAnimationFrame);
 /*************************************************************
  * pointer events
  */
-let pointers = new Map(); // map of pointers (each holding a ball)
-let balls = new Set(); // set of balls drawn and animated
-
 function onPointerDown(e) {
   const pointerId = e.pointerId;
   const t = 0.001 * performance.now(); // get current time in seconds
