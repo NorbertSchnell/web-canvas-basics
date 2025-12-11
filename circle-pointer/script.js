@@ -16,32 +16,38 @@ requestAnimationFrame(onAnimationFrame);
 /*************************************************************
  * pointer events
  */
-let pointer = null;
+const pointers = new Map();
 
 function onPointerDown(e) {
-  if (pointer === null) {
-    const id = e.pointerId;
-    const x = e.clientX / canvas.width;
-    const y = e.clientY / canvas.height;
+  const id = e.pointerId;
+  const x = e.clientX;
+  const y = e.clientY;
 
-    pointer = {
-      id: id,
-      x: x,
-      y: y,
-    }
+  const pointer = {
+    id: id,
+    x: x,
+    y: y,
   }
+
+  pointers.set(id, pointer);
 }
 
 function onPointerMove(e) {
-  if (pointer !== null && pointer.id === e.pointerId) {
-    pointer.x = e.clientX / canvas.width;
-    pointer.y = e.clientY / canvas.height;
+  const id = e.pointerId;
+  const pointer = pointers.get(id);
+
+  if (pointer) {
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
   }
 }
 
 function onPointerUp(e) {
-  if (pointer !== null && e.pointerId === pointer.id) {
-    pointer = null;
+  const id = e.pointerId;
+  const pointer = pointers.get(id);
+
+  if (pointer) {
+    pointers.delete(id);
   }
 }
 
@@ -56,9 +62,9 @@ function updateCanvasSize() {
 function onAnimationFrame() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (pointer !== null) {
-    const x = canvas.width * pointer.x
-    const y = canvas.height * pointer.y
+  for (let [id, pointer] of pointers) {
+    const x = pointer.x
+    const y = pointer.y
 
     context.globalAlpha = 0.666;
     context.fillStyle = '#f00';
@@ -69,4 +75,3 @@ function onAnimationFrame() {
 
   requestAnimationFrame(onAnimationFrame);
 }
-
