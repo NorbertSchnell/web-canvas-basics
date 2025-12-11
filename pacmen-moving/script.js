@@ -3,7 +3,6 @@ const context = canvas.getContext('2d');
 
 const pacmen = new Set();
 const radius = 40;
-const velocity = 200; // in pixel per second
 
 window.addEventListener('resize', updateCanvasSize);
 updateCanvasSize();
@@ -15,11 +14,13 @@ for (let i = 0; i < 10; i++) {
   const x = radius + Math.random() * (canvas.width - 2 * radius);
   const y = radius + Math.random() * (canvas.height - 2 * radius);
   const angle = 0.5 * Math.PI * Math.floor(4 * Math.random());
+  const velocity = 150 + 100 * Math.random();
 
   const pac = {
     x: x,
     y: y,
     angle: angle,
+    velocity: velocity,
     start: t,
     t: t,
   }
@@ -43,6 +44,7 @@ function onAnimationFrame() {
   for (let pac of pacmen) {
     let x = pac.x;
     let y = pac.y;
+    let velocity = pac.velocity;
     const angle = pac.angle;
     const dT = t - pac.t;
     const vX = velocity * Math.cos(angle);
