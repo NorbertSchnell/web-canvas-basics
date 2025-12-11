@@ -1,0 +1,80 @@
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+const radius = 40;
+const velocity = 200; // in pixel per second
+
+window.addEventListener('resize', updateCanvasSize);
+updateCanvasSize();
+
+document.body.addEventListener('pointerdown', onPointerDown);
+requestAnimationFrame(onAnimationFrame);
+
+/*************************************************************
+ * pointer events
+ */
+const pacmen = new Set();
+
+function onPointerDown(e) {
+  const x = e.clientX;
+  const y = e.clientY;
+  const t = 0.001 * performance.now();
+  const angle = 0.5 * Math.PI * Math.floor(4 * Math.random());
+
+  const pac = {
+    x: x,
+    y: y,
+    angle: angle,
+    start: t,
+    t: t,
+  }
+
+  pacmen.add(pac);
+}
+
+/*************************************************************
+ * canvas
+ */
+function updateCanvasSize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function onAnimationFrame() {
+  const t = 0.001 * performance.now();
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let pac of pacmen) {
+    let x = pac.x;
+    let y = pac.y;
+    const angle = pac.angle;
+    const dT = t - pac.t;
+    const vX = velocity * Math.cos(angle);
+    const vY = velocity * Math.sin(angle);
+
+    x += vX * dT;
+    y += vY * dT;
+
+    if (x > -radius && x < canvas.width + radius && y > -radius && y < canvas.height + radius) {
+      let opening = 8 * (t - pac.start) % 2;
+
+      if (opening > 1) {
+        opening = 2 - opening;
+      }
+
+      context.globalAlpha = 0.666;
+      context.fillStyle = '#aa0';
+      context.strokeStyle = '#ff0';
+      context.beginPath();
+      context.moveTo(x, y);
+      context.arc(x, y, radius, angle + opening * 1.2, angle - opening * 1.2);
+      context.lineTo(x, y);
+      context.fill();
+      context.stroke();
+    } else {
+      pacmen.delete(pac);
+    }
+  }
+
+  requestAnimationFrame(onAnimationFrame);
+}
