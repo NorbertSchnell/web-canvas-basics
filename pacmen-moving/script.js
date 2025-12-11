@@ -1,23 +1,19 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
+
+const pacmen = new Set();
 const radius = 40;
 const velocity = 200; // in pixel per second
 
 window.addEventListener('resize', updateCanvasSize);
 updateCanvasSize();
-
-document.body.addEventListener('pointerdown', onPointerDown);
 requestAnimationFrame(onAnimationFrame);
 
-/*************************************************************
- * pointer events
- */
-const pacmen = new Set();
 
-function onPointerDown(e) {
-  const x = e.clientX;
-  const y = e.clientY;
+for (let i = 0; i < 10; i++) {
   const t = 0.001 * performance.now();
+  const x = radius + Math.random() * (canvas.width - 2 * radius);
+  const y = radius + Math.random() * (canvas.height - 2 * radius);
   const angle = 0.5 * Math.PI * Math.floor(4 * Math.random());
 
   const pac = {
@@ -55,25 +51,37 @@ function onAnimationFrame() {
     x += vX * dT;
     y += vY * dT;
 
-    if (x > -radius && x < canvas.width + radius && y > -radius && y < canvas.height + radius) {
-      let opening = 8 * (t - pac.start) % 2;
-
-      if (opening > 1) {
-        opening = 2 - opening;
-      }
-
-      context.globalAlpha = 0.666;
-      context.fillStyle = '#aa0';
-      context.strokeStyle = '#ff0';
-      context.beginPath();
-      context.moveTo(x, y);
-      context.arc(x, y, radius, angle + opening * 1.2, angle - opening * 1.2);
-      context.lineTo(x, y);
-      context.fill();
-      context.stroke();
-    } else {
-      pacmen.delete(pac);
+    if (x < -radius) {
+      x = canvas.width + radius;
+    } else if (x > canvas.width + radius) {
+      x = -radius;
     }
+
+    if (y < -radius) {
+      y = canvas.height + radius;
+    } else if (y > canvas.height + radius) {
+      y = -radius;
+    }
+
+    let opening = 8 * (t - pac.start) % 2;
+
+    if (opening > 1) {
+      opening = 2 - opening;
+    }
+
+    pac.x = x;
+    pac.y = y;
+    pac.t = t;
+
+    context.globalAlpha = 0.666;
+    context.fillStyle = '#aa0';
+    context.strokeStyle = '#ff0';
+    context.beginPath();
+    context.moveTo(x, y);
+    context.arc(x, y, radius, angle + opening * 1.2, angle - opening * 1.2);
+    context.lineTo(x, y);
+    context.fill();
+    context.stroke();
   }
 
   requestAnimationFrame(onAnimationFrame);
