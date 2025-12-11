@@ -44,7 +44,7 @@ function onAnimationFrame() {
   for (let pac of pacmen) {
     let x = pac.x;
     let y = pac.y;
-    let velocity = pac.velocity;
+    const velocity = pac.velocity;
     const angle = pac.angle;
     const dT = t - pac.t;
     const vX = velocity * Math.cos(angle);
@@ -65,7 +65,7 @@ function onAnimationFrame() {
       y = -radius;
     }
 
-    let opening = 8 * (t - pac.start) % 2;
+    let opening = 0.03 * velocity * (t - pac.start) % 2;
 
     if (opening > 1) {
       opening = 2 - opening;
